@@ -2,7 +2,9 @@
 
 # set -x # for debugging
 
+
 access_token=""
+
 
 #### CORE FUNCTIONS
 
@@ -42,18 +44,38 @@ jq_test()
 #### FORMATTED REQUEST FUNCTIONS
 #    Uses format: `api_request 'API_ROUTE' 'FILTER1' 'FILTER2' ...`
 
-login_and_name()
-{
-  api_request 'users/nathos' '.login' '.name'
-  echo "Login: ${api_request_filtered[0]}"
-  echo "Name: ${api_request_filtered[1]}"
-}
-
 user_details()
 {
-  api_request "users/$username" '.login' '.name'
-  echo "Login: ${api_request_filtered[0]}"
-  echo "Name: ${api_request_filtered[1]}"
+  echo -e "\n\033[0mDetails for GitHub user \033[35m$username\033[0m:"
+  local name_length=${#username}
+  local header_length=$(( name_length + 25 ))
+  for i in $(seq 1 $header_length); do
+    echo -n "="
+  done
+  echo -e "\n"
+  api_request "users/$username" '.name' '.location' '.email' '.bio' '.public_repos' '.public_gists' '.followers' '.following' '.created_at'
+  echo "     Name: ${api_request_filtered[0]}"
+  echo " Location: ${api_request_filtered[1]}"
+  local email=${api_request_filtered[2]}
+  if [ $email != "null" ]; then
+    echo "    Email: $email"
+  fi
+  local bio=${api_request_filtered[3]}
+  if [ $bio != "null" ]; then
+    echo "      Bio: $bio"
+  fi
+  echo -e "\n"
+  echo -e " \033[35m$username\033[0m has shared \033[1;33m${api_request_filtered[4]}\033[0m public git repositories and \033[1;33m${api_request_filtered[5]}\033[0m gists.\n"
+  local user_since=${api_request_filtered[8]}
+  for i in $(seq 1 $name_length); do
+    echo -n " "
+  done
+  echo -e "  is followed by \033[1;33m${api_request_filtered[6]}\033[0m GitHub users and follows \033[1;33m${api_request_filtered[7]}\033[0m users.\n"
+  for i in $(seq 1 $name_length); do
+    echo -n " "
+  done
+  echo -e "  has been a happy GitHub user since \033[1;33m${user_since:0:10}\033[0m."
+  echo ""
   exit
 }
 
