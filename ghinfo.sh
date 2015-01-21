@@ -1,13 +1,20 @@
 #!/bin/bash
 
+# set -x # for debugging
+
+access_token=""
 
 #### CORE FUNCTIONS
 
 gh_request()
 {
   local gh_request_route=$@
-  curl -s -G "https://api.github.com/$gh_request_route" -H "Accept: application/vnd.github.full+json"
-  # echo "Request Route: $gh_request_route"
+  if [ -n "$access_token" ]
+  then
+    curl -s -G "https://api.github.com/$gh_request_route" -H "Accept: application/vnd.github.full+json" -H "Authorization: token $access_token"
+  else
+    curl -s -G "https://api.github.com/$gh_request_route" -H "Accept: application/vnd.github.full+json"
+  fi
 }
 
 api_request()
@@ -41,6 +48,14 @@ login_and_name()
 
 
 #### MAIN
+
+while [ "$1" != "" ]; do
+  case $1 in
+    -t | --token )  shift
+                    access_token="$1"
+  esac
+  shift
+done
 
 login_and_name
 
