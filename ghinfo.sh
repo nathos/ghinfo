@@ -42,6 +42,14 @@ login_and_name()
 
 #### MAIN
 
+while [ "$1" != "" ]; do
+  case $1 in
+    -t | --token )  shift
+                    access_token=$1
+  esac
+  shift
+done
+
 login_and_name
 
 
