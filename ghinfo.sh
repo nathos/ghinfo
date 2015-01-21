@@ -11,9 +11,9 @@ gh_request()
   local gh_request_route=$@
   if [ -n "$access_token" ]
   then
-    curl -s -G "https://api.github.com/$gh_request_route" -H "Accept: application/vnd.github.full+json" -H "Authorization: token $access_token"
+    curl -s -G "https://api.github.com/$gh_request_route" -H "User-Agent: nathos/ghinfo" -H "Accept: application/vnd.github.full+json" -H "Authorization: token $access_token"
   else
-    curl -s -G "https://api.github.com/$gh_request_route" -H "Accept: application/vnd.github.full+json"
+    curl -s -G "https://api.github.com/$gh_request_route" -H "User-Agent: nathos/ghinfo" -H "Accept: application/vnd.github.full+json"
   fi
 }
 
@@ -49,21 +49,29 @@ login_and_name()
   echo "Name: ${api_request_filtered[1]}"
 }
 
+user_details()
+{
+  api_request "users/$username" '.login' '.name'
+  echo "Login: ${api_request_filtered[0]}"
+  echo "Name: ${api_request_filtered[1]}"
+  exit
+}
+
 
 
 #### MAIN
 
+jq_test
+
 while [ "$1" != "" ]; do
   case $1 in
     -t | --token )  shift
-                    access_token="$1"
+                    access_token="$1" ;;
+    -u | --user )   shift
+                    username="$1"
+                    user_details
   esac
   shift
 done
-
-jq_test
-
-login_and_name
-
 
 exit
