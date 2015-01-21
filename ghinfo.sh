@@ -36,7 +36,7 @@ api_request()
 
 jq_test()
 {
-  hash jqq 2>/dev/null || { echo -e "\n\033[31mERROR:\033[0m I require the \033[1;33mjq\033[0m command but it's not installed.\n"; exit 1; } # test that `jq` is installed
+  hash jq 2>/dev/null || { echo -e "\n\033[31mERROR:\033[0m I require the \033[1;33mjq\033[0m command but it's not installed.\n"; exit 1; } # test that `jq` is installed
 }
 
 #### FORMATTED REQUEST FUNCTIONS
