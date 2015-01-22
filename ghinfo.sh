@@ -38,9 +38,11 @@ api_request()
 
 }
 
-jq_test()
+dependency_test()
 {
-  hash jq 2>/dev/null || { echo -e "\n\033[31mERROR:\033[0m I require the \033[1;33mjq\033[0m command but it's not installed.\n"; exit 1; } # test that `jq` is installed
+  for dep in curl jq ; do
+    hash $dep 2>/dev/null || { echo -e "\n\033[31mERROR:\033[0m I require the \033[1;33m$dep\033[0m command but it's not installed.\n"; exit 1; }
+  done
 }
 
 usage()
@@ -135,7 +137,7 @@ repo_details()
 
 #### MAIN
 
-jq_test
+dependency_test
 
 while [ "$1" != "" ]; do
   case $1 in
