@@ -3,7 +3,7 @@ jq-powered Bash script experiment to display useful information about GitHub use
 
 ## What is it?
 
-`ghinfo` displays summaries of GitHub users and repositories.
+`ghinfo` displays summaries of GitHub users and repositories. Quickly grab stats, get a sense of project activiy, and display clone URLs all without leaving the command line.
 
 ## Usage
 
