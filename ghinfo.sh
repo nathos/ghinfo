@@ -61,7 +61,7 @@ user_details()
     echo "    Email: $email"
   fi
   local bio=${api_request_filtered[3]}
-  if [ $bio != "null" ]; then
+  if [ "$bio" != "null" ]; then
     echo "      Bio: $bio"
   fi
   echo -e "\n"
@@ -79,6 +79,48 @@ user_details()
   exit
 }
 
+repo_details()
+{
+  echo -e "\n\033[0mDetails for repository \033[35m$repo\033[0m:"
+  local name_length=${#repo}
+  local header_length=$(( name_length + 24 ))
+  for i in $(seq 1 $header_length); do
+    echo -n "="
+  done
+  echo -e "\n"
+  api_request "repos/$repo" '.name' '.owner.login' '.description' '.homepage' '.forks_count' '.stargazers_count' '.open_issues_count' '.created_at' '.updated_at' '.parent.name' '.parent.owner.login' '.clone_url'
+  echo -e " \033[1m${api_request_filtered[0]}\033[0m by ${api_request_filtered[1]}\n"
+  local description=${api_request_filtered[2]}
+  if [ "$description" != "null" ]; then
+    echo " $description" | fmt
+    echo ""
+  fi
+  local homepage=${api_request_filtered[3]}
+  if [ $homepage != "null" ]; then
+    echo " Homepage: $homepage"
+  fi
+  echo -e "\n \033[35m$repo\033[0m has been forked \033[1;33m${api_request_filtered[4]}\033[0m times and starred \033[1;33m${api_request_filtered[5]}\033[0m times.\n"
+  for i in $(seq 1 $name_length); do
+    echo -n " "
+  done
+  echo -e "  it has \033[1;33m${api_request_filtered[6]}\033[0m open issues.\n"
+  for i in $(seq 1 $name_length); do
+    echo -n " "
+  done
+  local created_at=${api_request_filtered[7]}
+  local updated_at=${api_request_filtered[8]}
+  echo -e "  was created on \033[1;33m${created_at:0:10}\033[0m and last updated on \033[1;33m${updated_at:0:10}\033[0m."
+  local parent_name=${api_request_filtered[9]}
+  local parent_owner=${api_request_filtered[10]}
+  if [ $parent_name != "null" ]; then
+    echo -e "\n\n \033[35m${api_request_filtered[0]}\033[0m was forked from \033[33m$parent_name\033[0m by \033[33m$parent_owner\033[0m"
+  fi
+  echo -e "\n Clone URL: ${api_request_filtered[11]}"
+
+  echo ""
+  exit
+}
+
 
 
 #### MAIN
@@ -91,7 +133,10 @@ while [ "$1" != "" ]; do
                     access_token="$1" ;;
     -u | --user )   shift
                     username="$1"
-                    user_details
+                    user_details ;;
+    -r | --repo )   shift
+                    repo="$1"
+                    repo_details
   esac
   shift
 done
