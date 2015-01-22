@@ -43,6 +43,16 @@ jq_test()
   hash jq 2>/dev/null || { echo -e "\n\033[31mERROR:\033[0m I require the \033[1;33mjq\033[0m command but it's not installed.\n"; exit 1; } # test that `jq` is installed
 }
 
+usage()
+{
+  echo -e "Usage: $0 [options] <argv>...\n"
+  echo "Options:"
+  echo " -u | --user <username>           Display user details"
+  echo " -r | --repo <user/repository>    Display repo details"
+  echo " -h | --help                      Help"
+  echo ""
+}
+
 #### FORMATTED REQUEST FUNCTIONS
 #    Uses format: `api_request 'API_ROUTE' 'FILTER1' 'FILTER2' ...`
 
@@ -78,7 +88,6 @@ user_details()
   done
   echo -e "  has been a happy GitHub user since \033[1;33m${user_since:0:10}\033[0m."
   echo ""
-  exit
 }
 
 repo_details()
@@ -120,7 +129,6 @@ repo_details()
   echo -e "\n Clone URL: ${api_request_filtered[10]}"
 
   echo ""
-  exit
 }
 
 
@@ -131,6 +139,8 @@ jq_test
 
 while [ "$1" != "" ]; do
   case $1 in
+    -h | --help )   usage
+                    exit ;;
     -t | --token )  shift
                     access_token="$1" ;;
     -u | --user )   shift
@@ -139,8 +149,9 @@ while [ "$1" != "" ]; do
     -r | --repo )   shift
                     repo="$1"
                     repo_details
+                    exit ;;
+    * )             usage
+                    exit 1
   esac
   shift
 done
-
-exit
