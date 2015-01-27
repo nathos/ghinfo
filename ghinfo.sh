@@ -5,6 +5,25 @@
 
 access_token=""
 
+#### COLORS & FORMATTING
+
+_red=$(tput setaf 1)
+_green=$(tput setaf 2)
+_yellow=$(tput setaf 3)
+_blue=$(tput setaf 4)
+_magenta=$(tput setaf 5)
+_cyan=$(tput setaf 6)
+_white=$(tput setaf 7)
+
+_bold=$(tput bold)
+
+_reset=$(tput sgr0)
+
+_error=${_red}${_bold}
+_command=${_yellow}${_bold}
+_target=${_magenta}
+_em=${_blue}${_bold}
+
 
 #### CORE FUNCTIONS
 
@@ -38,10 +57,11 @@ api_request()
 
 }
 
+
 dependency_test()
 {
   for dep in curl jq ; do
-    hash $dep 2>/dev/null || { echo -e "$(tput setaf 1)$(tput bold)ERROR:$(tput sgr0) I require the $(tput setaf 3)$(tput bold)$dep$(tput sgr0) command but it's not installed.\n"; exit 1; }
+    hash $dep 2>/dev/null || { echo -e "${_error}Error:${_reset} I require the ${_command}$dep${_reset} command but it's not installed.\n"; exit 1; }
   done
 }
 
@@ -60,7 +80,7 @@ usage()
 
 user_details()
 {
-  echo -e "\n\033[0mDetails for GitHub user \033[35m$username\033[0m:"
+  echo -e "\nDetails for GitHub user ${_magenta}$username${_reset}:"
   local name_length=${#username}
   local header_length=$(( name_length + 25 ))
   for i in $(seq 1 $header_length); do
@@ -79,16 +99,16 @@ user_details()
     echo "      Bio: $bio"
   fi
   echo -e "\n"
-  echo -e " \033[35m$username\033[0m has shared \033[1;33m${api_request_filtered[4]}\033[0m public git repositories and \033[1;33m${api_request_filtered[5]}\033[0m gists.\n"
+  echo -e " ${_magenta}$username${_reset} has shared ${_em}${api_request_filtered[4]}${_reset} public git repositories and ${_em}${api_request_filtered[5]}${_reset} gists.\n"
   local user_since=${api_request_filtered[8]}
   for i in $(seq 1 $name_length); do
     echo -n " "
   done
-  echo -e "  is followed by \033[1;33m${api_request_filtered[6]}\033[0m GitHub users and follows \033[1;33m${api_request_filtered[7]}\033[0m users.\n"
+  echo -e "  is followed by ${_em}${api_request_filtered[6]}${_reset} GitHub users and follows ${_em}${api_request_filtered[7]}${_reset} users.\n"
   for i in $(seq 1 $name_length); do
     echo -n " "
   done
-  echo -e "  has been a happy GitHub user since \033[1;33m${user_since:0:10}\033[0m."
+  echo -e "  has been a happy GitHub user since ${_em}${user_since:0:10}${_reset}."
   echo ""
 }
 
