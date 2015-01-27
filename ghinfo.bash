@@ -54,6 +54,15 @@ api_request()
     #   echo "No response for $arg"
     fi
   done
+}
+
+api_request_forks() # FIXME: refactor this into the main api_request function
+{
+  local api_request_result=$( gh_request "$1") # only make a single API request
+
+  api_request_filtered=() # initialize/empty filtered results array
+
+  response=$( echo $api_request_result | jq -r '.[] | .owner.login' )
 
 }
 
@@ -154,7 +163,23 @@ repo_details()
   echo ""
 }
 
-
+list_forks()
+{
+  local cleaned_repo=$(echo "${repo}" | sed -e 's/^https*:\/*//' -e 's/github\.com\/*//' -e 's/\.*git$//' -e 's#/$##')
+  echo -e "\nDetails for repository ${_target}$cleaned_repo${_reset}:"
+  local name_length=${#cleaned_repo}
+  local header_length=$(( name_length + 24 ))
+  for i in $(seq 1 $header_length); do
+    echo -n "="
+  done
+  echo -e "\n"
+  api_request "repos/$cleaned_repo" '.name' '.owner.login' '.forks_count'
+  echo -e "${_bold}${_white}${api_request_filtered[0]}${_reset} by ${api_request_filtered[1]}\n"
+  echo -e "\n${_target}$cleaned_repo${_reset} has been forked ${_em}${api_request_filtered[2]}${_reset} times, including forks by these GitHub users:\n"
+  api_request_forks "repos/$cleaned_repo/forks"
+  echo -e "${_blue}$response${_reset}"
+  echo ""
+}
 
 #### MAIN
 
@@ -171,7 +196,10 @@ while [ "$1" != "" ]; do
                     user_details ;;
     -r | --repo )   shift
                     repo="$1"
-                    repo_details
+                    repo_details ;;
+    -f | --forks )  shift
+                    repo="$1"
+                    list_forks
                     exit ;;
     * )             usage
                     exit 1
