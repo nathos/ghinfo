@@ -41,7 +41,7 @@ api_request()
 dependency_test()
 {
   for dep in curl jq ; do
-    hash $dep 2>/dev/null || { echo -e "\n\033[31mERROR:\033[0m I require the \033[1;33m$dep\033[0m command but it's not installed.\n"; exit 1; }
+    hash $dep 2>/dev/null || { echo -e "$(tput setaf 1)$(tput bold)ERROR:$(tput sgr0) I require the $(tput setaf 3)$(tput bold)$dep$(tput sgr0) command but it's not installed.\n"; exit 1; }
   done
 }
 
