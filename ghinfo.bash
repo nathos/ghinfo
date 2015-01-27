@@ -79,14 +79,15 @@ usage()
 
 user_details()
 {
-  echo -e "\nDetails for GitHub user ${_magenta}$username${_reset}:"
-  local name_length=${#username}
+  local cleaned_username=$(echo "${username}" | sed -e 's/^https*:\/*//' -e 's/github\.com\/*//' -e 's#/$## ')
+  echo -e "\nDetails for GitHub user ${_magenta}$cleaned_username${_reset}:"
+  local name_length=${#cleaned_username}
   local header_length=$(( name_length + 25 ))
   for i in $(seq 1 $header_length); do
     echo -n "="
   done
   echo -e "\n"
-  api_request "users/$username" '.name' '.location' '.email' '.bio' '.public_repos' '.public_gists' '.followers' '.following' '.created_at'
+  api_request "users/$cleaned_username" '.name' '.location' '.email' '.bio' '.public_repos' '.public_gists' '.followers' '.following' '.created_at'
   echo "     Name: ${api_request_filtered[0]}"
   echo " Location: ${api_request_filtered[1]}"
   local email=${api_request_filtered[2]}
@@ -98,7 +99,7 @@ user_details()
     echo "      Bio: $bio"
   fi
   echo -e "\n"
-  echo -e " ${_magenta}$username${_reset} has shared ${_em}${api_request_filtered[4]}${_reset} public git repositories and ${_em}${api_request_filtered[5]}${_reset} gists.\n"
+  echo -e " ${_magenta}$cleaned_username${_reset} has shared ${_em}${api_request_filtered[4]}${_reset} public git repositories and ${_em}${api_request_filtered[5]}${_reset} gists.\n"
   local user_since=${api_request_filtered[8]}
   for i in $(seq 1 $name_length); do
     echo -n " "
@@ -113,7 +114,7 @@ user_details()
 
 repo_details()
 {
-  local cleaned_repo=$(echo "${repo}" | sed -e 's/^https*:\/*//' -e 's/github\.com\/*//' -e 's/\.*git$//' -e 's#/$##' )
+  local cleaned_repo=$(echo "${repo}" | sed -e 's/^https*:\/*//' -e 's/github\.com\/*//' -e 's/\.*git$//' -e 's#/$##')
   echo -e "\nDetails for repository ${_target}$cleaned_repo${_reset}:"
   local name_length=${#cleaned_repo}
   local header_length=$(( name_length + 24 ))
