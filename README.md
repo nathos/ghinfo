@@ -13,9 +13,9 @@ jq-powered Bash script experiment to display useful information about GitHub use
 
 * To display a summary of a GitHub repository:
 
-  ``` ./ghinfo.sh -r <username/repositoryname> ```
+  ``` ./ghinfo.bash -r <username/repositoryname> ```
 
-**NOTE:** `ghinfo.sh` must be executable: ```chmod 755 ghinfo.bash```
+**NOTE:** `ghinfo.bash` must be executable: ```chmod 755 ghinfo.bash```
 
 ## Dependencies
 
