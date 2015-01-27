@@ -14,6 +14,12 @@ jq-powered Bash script experiment to display useful information about GitHub use
 * To display a summary of a GitHub repository:
 
   ``` ./ghinfo.bash -r <username/repositoryname> ```
+  
+* To display a list of forks for a GitHub repository:
+
+  ``` ./ghinfo.bash -f <username/repositoryname> ```
+  
+For all commands, `ghinfo` can also accept a full GitHub user or repo URL as valid input.
 
 **NOTE:** `ghinfo.bash` must be executable: ```chmod 755 ghinfo.bash```
 
