@@ -113,14 +113,15 @@ user_details()
 
 repo_details()
 {
-  echo -e "\nDetails for repository ${_target}$repo${_reset}:"
-  local name_length=${#repo}
+  local cleaned_repo=$(echo "${repo}" | sed -e 's/^https*:\/*//' -e 's/github\.com\/*//' -e 's/\.*git$//' -e 's#/$##' )
+  echo -e "\nDetails for repository ${_target}$cleaned_repo${_reset}:"
+  local name_length=${#cleaned_repo}
   local header_length=$(( name_length + 24 ))
   for i in $(seq 1 $header_length); do
     echo -n "="
   done
   echo -e "\n"
-  api_request "repos/$repo" '.name' '.owner.login' '.description' '.forks_count' '.stargazers_count' '.open_issues_count' '.created_at' '.updated_at' '.parent.name' '.parent.owner.login' '.clone_url' '.homepage'
+  api_request "repos/$cleaned_repo" '.name' '.owner.login' '.description' '.forks_count' '.stargazers_count' '.open_issues_count' '.created_at' '.updated_at' '.parent.name' '.parent.owner.login' '.clone_url' '.homepage'
   echo -e " ${_bold}${_white}${api_request_filtered[0]}${_reset} by ${api_request_filtered[1]}\n"
   local description=${api_request_filtered[2]}
   if [ "$description" != "null" ]; then
@@ -131,7 +132,7 @@ repo_details()
   if [[ -n $homepage ]]; then
     echo " Homepage: $homepage"
   fi
-  echo -e "\n ${_target}$repo${_reset} has been forked ${_em}${api_request_filtered[3]}${_reset} times and starred ${_em}${api_request_filtered[4]}${_reset} times.\n"
+  echo -e "\n ${_target}$cleaned_repo${_reset} has been forked ${_em}${api_request_filtered[3]}${_reset} times and starred ${_em}${api_request_filtered[4]}${_reset} times.\n"
   for i in $(seq 1 $name_length); do
     echo -n " "
   done
