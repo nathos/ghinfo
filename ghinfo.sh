@@ -57,11 +57,10 @@ api_request()
 
 }
 
-
 dependency_test()
 {
   for dep in curl jq ; do
-    hash $dep 2>/dev/null || { echo -e "${_error}Error:${_reset} I require the ${_command}$dep${_reset} command but it's not installed.\n"; exit 1; }
+    command -v $dep &>/dev/null || { echo -e "\n${_error}Error:${_reset} I require the ${_command}$dep${_reset} command but it's not installed.\n"; exit 1; }
   done
 }
 
