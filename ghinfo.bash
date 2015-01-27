@@ -1,9 +1,28 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # set -x # for debugging
 
 
 access_token=""
+
+#### COLORS & FORMATTING
+
+_red=$(tput setaf 1)
+_green=$(tput setaf 2)
+_yellow=$(tput setaf 3)
+_blue=$(tput setaf 4)
+_magenta=$(tput setaf 5)
+_cyan=$(tput setaf 6)
+_white=$(tput setaf 7)
+
+_bold=$(tput bold)
+
+_reset=$(tput sgr0)
+
+_error=${_red}${_bold}
+_command=${_yellow}${_bold}
+_target=${_magenta}
+_em=${_blue}${_bold}
 
 
 #### CORE FUNCTIONS
@@ -41,7 +60,7 @@ api_request()
 dependency_test()
 {
   for dep in curl jq ; do
-    hash $dep 2>/dev/null || { echo -e "\n\033[31mERROR:\033[0m I require the \033[1;33m$dep\033[0m command but it's not installed.\n"; exit 1; }
+    command -v $dep &>/dev/null || { echo -e "\n${_error}Error:${_reset} I require the ${_command}$dep${_reset} command but it's not installed.\n"; exit 1; }
   done
 }
 
@@ -60,7 +79,7 @@ usage()
 
 user_details()
 {
-  echo -e "\n\033[0mDetails for GitHub user \033[35m$username\033[0m:"
+  echo -e "\nDetails for GitHub user ${_magenta}$username${_reset}:"
   local name_length=${#username}
   local header_length=$(( name_length + 25 ))
   for i in $(seq 1 $header_length); do
@@ -79,22 +98,22 @@ user_details()
     echo "      Bio: $bio"
   fi
   echo -e "\n"
-  echo -e " \033[35m$username\033[0m has shared \033[1;33m${api_request_filtered[4]}\033[0m public git repositories and \033[1;33m${api_request_filtered[5]}\033[0m gists.\n"
+  echo -e " ${_magenta}$username${_reset} has shared ${_em}${api_request_filtered[4]}${_reset} public git repositories and ${_em}${api_request_filtered[5]}${_reset} gists.\n"
   local user_since=${api_request_filtered[8]}
   for i in $(seq 1 $name_length); do
     echo -n " "
   done
-  echo -e "  is followed by \033[1;33m${api_request_filtered[6]}\033[0m GitHub users and follows \033[1;33m${api_request_filtered[7]}\033[0m users.\n"
+  echo -e "  is followed by ${_em}${api_request_filtered[6]}${_reset} GitHub users and follows ${_em}${api_request_filtered[7]}${_reset} users.\n"
   for i in $(seq 1 $name_length); do
     echo -n " "
   done
-  echo -e "  has been a happy GitHub user since \033[1;33m${user_since:0:10}\033[0m."
+  echo -e "  has been a happy GitHub user since ${_em}${user_since:0:10}${_reset}."
   echo ""
 }
 
 repo_details()
 {
-  echo -e "\n\033[0mDetails for repository \033[35m$repo\033[0m:"
+  echo -e "\nDetails for repository ${_target}$repo${_reset}:"
   local name_length=${#repo}
   local header_length=$(( name_length + 24 ))
   for i in $(seq 1 $header_length); do
@@ -102,7 +121,7 @@ repo_details()
   done
   echo -e "\n"
   api_request "repos/$repo" '.name' '.owner.login' '.description' '.forks_count' '.stargazers_count' '.open_issues_count' '.created_at' '.updated_at' '.parent.name' '.parent.owner.login' '.clone_url' '.homepage'
-  echo -e " \033[1m${api_request_filtered[0]}\033[0m by ${api_request_filtered[1]}\n"
+  echo -e " ${_bold}${_white}${api_request_filtered[0]}${_reset} by ${api_request_filtered[1]}\n"
   local description=${api_request_filtered[2]}
   if [ "$description" != "null" ]; then
     echo " $description" | fmt
@@ -112,21 +131,21 @@ repo_details()
   if [[ -n $homepage ]]; then
     echo " Homepage: $homepage"
   fi
-  echo -e "\n \033[35m$repo\033[0m has been forked \033[1;33m${api_request_filtered[3]}\033[0m times and starred \033[1;33m${api_request_filtered[4]}\033[0m times.\n"
+  echo -e "\n ${_target}$repo${_reset} has been forked ${_em}${api_request_filtered[3]}${_reset} times and starred ${_em}${api_request_filtered[4]}${_reset} times.\n"
   for i in $(seq 1 $name_length); do
     echo -n " "
   done
-  echo -e "  it has \033[1;33m${api_request_filtered[5]}\033[0m open issues.\n"
+  echo -e "  has ${_em}${api_request_filtered[5]}${_reset} open issues.\n"
   for i in $(seq 1 $name_length); do
     echo -n " "
   done
   local created_at=${api_request_filtered[6]}
   local updated_at=${api_request_filtered[7]}
-  echo -e "  was created on \033[1;33m${created_at:0:10}\033[0m and last updated on \033[1;33m${updated_at:0:10}\033[0m."
+  echo -e "  was created on ${_em}${created_at:0:10}${_reset} and last updated on ${_em}${updated_at:0:10}${_reset}."
   local parent_name=${api_request_filtered[8]}
   local parent_owner=${api_request_filtered[9]}
   if [ $parent_name != "null" ]; then
-    echo -e "\n\n \033[35m${api_request_filtered[0]}\033[0m was forked from \033[33m$parent_name\033[0m by \033[33m$parent_owner\033[0m"
+    echo -e "\n\n ${_target}${api_request_filtered[0]}${_reset} was forked from ${_yellow}$parent_name${_yellow} by ${_yellow}$parent_owner${_reset}"
   fi
   echo -e "\n Clone URL: ${api_request_filtered[10]}"
 
