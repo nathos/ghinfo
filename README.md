@@ -9,19 +9,19 @@ jq-powered Bash script experiment to display useful information about GitHub use
 
 * To display a summary of a GitHub user:
 
-  ``` ./ghinfo.sh -u <username> ```
+  ``` ./ghinfo.bash -u <username> ```
 
 * To display a summary of a GitHub repository:
 
   ``` ./ghinfo.sh -r <username/repositoryname> ```
 
-**NOTE:** `ghinfo.sh` must be executable: ```chmod 755 ghinfo.sh```
+**NOTE:** `ghinfo.sh` must be executable: ```chmod 755 ghinfo.bash```
 
 ## Dependencies
 
 `ghinfo` uses the [`jq` JSON processor](http://stedolan.github.io/jq/) and `curl`.
 
-See the [detailed installation instructions for `jq`](http://stedolan.github.io/jq/download/). 
+See the [detailed installation instructions for `jq`](http://stedolan.github.io/jq/download/).
 
 Mac users can easily install `jq` with [Homebrew](http://brew.sh):
 
